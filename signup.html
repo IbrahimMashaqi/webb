@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - Stilleto</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/index.css" />
+
+    <style>
+      /* ===== Password Strength ===== */
+      .password-strength {
+        height: 8px;
+        width: 100%;
+        background: #eee;
+        border-radius: 5px;
+        margin-top: 6px;
+        overflow: hidden;
+      }
+
+      .password-strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .strength-weak {
+        background: #e74c3c;
+        width: 33%;
+      }
+
+      .strength-medium {
+        background: #f1c40f;
+        width: 66%;
+      }
+
+      .strength-strong {
+        background: #2ecc71;
+        width: 100%;
+      }
+
+      .strength-text {
+        font-size: 12px;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header-decoration"></div>
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-left">
+        <a href="home.html"><img src="heels/logo1.png" alt="Logo" /></a>
+      </div>
+      <div class="header-right">
+        <a href="home.html">Home</a>
+        <a href="heels.html">Heels</a>
+        <a href="bags.html">Bags</a>
+        <a href="made_to_order.html">Bespoke</a>
+        <a href="new-arrivals.html">New</a>
+        <a href="sale.html">Sale</a>
+        <a href="login.html"><i class="fa-solid fa-user"></i> Login</a>
+      </div>
+    </div>
+
+    <!-- SIGN UP -->
+    <div class="auth-container">
+      <div class="auth-box">
+        <h2>Create Account</h2>
+        <p class="auth-subtitle">Join us today and start shopping</p>
+
+        <form class="auth-form" id="signupForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" id="signup-firstname" required />
+              <span class="error-message" id="firstname-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" id="signup-lastname" required />
+              <span class="error-message" id="lastname-error"></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="signup-email" required />
+            <span class="error-message" id="email-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label>Phone</label>
+            <input
+              type="tel"
+              id="signup-phone"
+              placeholder="05XXXXXXXX"
+              required
+            />
+            <span class="error-message" id="phone-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="signup-password" required />
+
+            <!-- strength bar -->
+            <div class="password-strength">
+              <div id="strengthBar" class="password-strength-bar"></div>
+            </div>
+            <div id="strengthText" class="strength-text"></div>
+
+            <span class="error-message" id="password-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="signup-confirm-password" required />
+            <span class="error-message" id="confirm-password-error"></span>
+          </div>
+
+          <div class="form-group-checkbox">
+            <label>
+              <input type="checkbox" id="terms-checkbox" />
+              I agree to the Terms & Privacy Policy
+            </label>
+            <span class="error-message" id="terms-error"></span>
+          </div>
+
+          <button type="submit" class="auth-btn">Create Account</button>
+
+          <p class="auth-switch">
+            Already have an account?
+            <a href="login.html">Sign In</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 Stilleto | All rights reserved.</p>
+    </footer>
+
+    <!-- ================= SCRIPT ================= -->
+    <script>
+      const passwordInput = document.getElementById("signup-password");
+      const strengthBar = document.getElementById("strengthBar");
+      const strengthText = document.getElementById("strengthText");
+
+      let passwordLevel = 0; // 1 weak | 2 medium | 3 strong
+
+      passwordInput.addEventListener("input", () => {
+        const value = passwordInput.value;
+        strengthBar.className = "password-strength-bar";
+        strengthText.textContent = "";
+
+        if (value.length < 6) {
+          passwordLevel = 1;
+          strengthBar.classList.add("strength-weak");
+          strengthText.textContent = "Weak password";
+        } else if (
+          value.length >= 8 &&
+          /[A-Z]/.test(value) &&
+          /[0-9]/.test(value)
+        ) {
+          passwordLevel = 3;
+          strengthBar.classList.add("strength-strong");
+          strengthText.textContent = "Strong password";
+        } else {
+          passwordLevel = 2;
+          strengthBar.classList.add("strength-medium");
+          strengthText.textContent = "Medium password";
+        }
+      });
+
+      function showError(id, msg) {
+        document.getElementById(id).textContent = msg;
+      }
+
+      function clearErrors() {
+        document
+          .querySelectorAll(".error-message")
+          .forEach((e) => (e.textContent = ""));
+      }
+
+      document
+        .getElementById("signupForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          clearErrors();
+
+          const phone = document.getElementById("signup-phone").value.trim();
+
+          if (!/^\d{10}$/.test(phone)) {
+            showError("phone-error", "Phone number must be 10 digits");
+            return;
+          }
+
+          if (passwordLevel < 2) {
+            showError(
+              "password-error",
+              "Password must be at least Medium strength"
+            );
+            return;
+          }
+
+          const password = passwordInput.value;
+          const confirm = document.getElementById(
+            "signup-confirm-password"
+          ).value;
+
+          if (password !== confirm) {
+            showError("confirm-password-error", "Passwords do not match");
+            return;
+          }
+
+          if (!document.getElementById("terms-checkbox").checked) {
+            showError("terms-error", "You must accept the terms");
+            return;
+          }
+
+          const data = {
+            firstName: document.getElementById("signup-firstname").value.trim(),
+            lastName: document.getElementById("signup-lastname").value.trim(),
+            email: document.getElementById("signup-email").value.trim(),
+            phone: phone,
+            password: password,
+          };
+
+          const res = await fetch("api/signup.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          const result = await res.json();
+
+          if (!res.ok || !result.success) {
+            alert(result.message || "Signup failed");
+            return;
+          }
+
+          alert("Account created successfully 🎉");
+          window.location.href = "login.html";
+        });
+    </script>
+  </body>
+</html>
